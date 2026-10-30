@@ -1,0 +1,292 @@
+.page {
+  min-height: 100vh;
+  background-color: #020617;
+  color: #f8fafc;
+  box-sizing: border-box;
+}
+
+.header {
+  width: 100%;
+  border-bottom: 1px solid #1e293b;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #60a5fa, #2dd4bf);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.adminBtn {
+  background: #1e293b;
+  color: #38bdf8;
+  border: 1px solid #334155;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.main {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.topBar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .topBar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.subtitle {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filterBtn {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.filterActive {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .gridContainer {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.espacosSection h2, .minhasReservasSection h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #f1f5f9;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 600px) {
+  .cardsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid #1e293b;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.tagTipo {
+  font-size: 0.7rem;
+  background: #1e293b;
+  color: #94a3b8;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.statusBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #f8fafc;
+}
+
+.cardInfo {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin: 0.5rem 0 1.25rem 0;
+}
+
+.btnReservar {
+  width: 100%;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btnReservar:disabled {
+  background: #1e293b;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.minhasReservasSection {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid #1e293b;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  height: fit-content;
+}
+
+.emptyText {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.reservaList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reservaCard {
+  background: #020617;
+  border: 1px solid #1e293b;
+  padding: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+.reservaCard strong {
+  color: #60a5fa;
+  font-size: 0.9rem;
+}
+
+.reservaCard p {
+  margin: 0.25rem 0;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+}
+
+.reservaCard small {
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 50;
+}
+
+.modal {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  padding: 1.75rem;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 450px;
+}
+
+.modal h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.modalSub {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  margin: 0.25rem 0 1.25rem 0;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.btnCancel {
+  flex: 1;
+  background: transparent;
+  border: 1px solid #334155;
+  color: #cbd5e1;
+  padding: 0.6rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.btnConfirm {
+  flex: 1;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
