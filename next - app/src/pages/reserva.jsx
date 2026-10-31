@@ -61,7 +61,6 @@ export default function ReservaPage() {
       horarioInicio: reservaForm.horarioInicio,
       horarioFim: reservaForm.horarioFim,
       finalidade: reservaForm.finalidade,
-      // Opcional: ID do Usuário caso sua API exija
       idUsuario: 1 
     };
 
