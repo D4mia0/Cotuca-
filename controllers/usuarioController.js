@@ -1,4 +1,14 @@
-const Usuario = require('../models/Usuario');
+const Usuario = require('../models/usuario');
+
+async function listar(req, res) {
+  try {
+    const usuarios = await Usuario.buscarTodos();
+    res.json(usuarios);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: 'Erro ao listar usuários' });
+  }
+}
 
 async function cadastrar(req, res) {
   try {
@@ -45,4 +55,4 @@ async function login(req, res) {
   }
 }
 
-module.exports = { cadastrar, login };
+module.exports = { cadastrar, login, listar };

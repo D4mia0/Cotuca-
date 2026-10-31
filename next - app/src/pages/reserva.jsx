@@ -1,21 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "@/styles/Reserva.module.css";
 
-export default function ReservaPage() {
-  // Lista unificada de espaços cadastrados no sistema
-  const [espacos] = useState([
-    { id: "lab1", nome: "Lab de Informática 01", tipo: "Laboratório", capacidade: 40, bloco: "Bloco A", status: "Disponível", statusCor: "#22c55e" },
-    { id: "lab2", nome: "Lab de Química Analítica", tipo: "Laboratório", capacidade: 25, bloco: "Bloco C", status: "Em Manutenção", statusCor: "#f59e0b" },
-    { id: "sala101", nome: "Sala 101 - Estudo em Grupo", tipo: "Sala", capacidade: 10, bloco: "Bloco B", status: "Disponível", statusCor: "#22c55e" },
-    { id: "sala202", nome: "Auditório Principal", tipo: "Sala", capacidade: 120, bloco: "Bloco Central", status: "Disponível", statusCor: "#22c55e" },
-  ]);
+const API_URL = "http://localhost:3001/api";
 
-  // Lista de Reservas Realizadas
-  const [minhasReservas, setMinhasReservas] = useState([
-    { id: 1, espacoNome: "Lab de Informática 01", data: "2026-10-20", horario: "14:00 - 16:00", finalidade: "Trabalho de Programação" },
-  ]);
+export default function ReservaPage() {
+  // Estado dinâmico carregado do Banco de Dados
+  const [espacos, setEspacos] = useState([]);
+  const [minhasReservas, setMinhasReservas] = useState([]);
 
   // Estado do modal/formulário de reserva selecionado
   const [selectedEspaco, setSelectedEspaco] = useState(null);
@@ -28,25 +21,77 @@ export default function ReservaPage() {
     finalidade: "",
   });
 
-  const handleConfirmarReserva = (e) => {
+  // 1. CARREGAR RECURSOS E RESERVAS AO ABRIR A PÁGINA
+  useEffect(() => {
+    carregarEspacos();
+    carregarReservas();
+  }, []);
+
+  async function carregarEspacos() {
+    try {
+      const res = await fetch(`${API_URL}/recursos`);
+      if (res.ok) {
+        const dados = await res.json();
+        setEspacos(dados);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar recursos:", error);
+    }
+  }
+
+  async function carregarReservas() {
+    try {
+      const res = await fetch(`${API_URL}/reservas`);
+      if (res.ok) {
+        const dados = await res.json();
+        setMinhasReservas(dados);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar reservas:", error);
+    }
+  }
+
+  // 2. SALVAR NOVA RESERVA NO BANCO DE DADOS
+  const handleConfirmarReserva = async (e) => {
     e.preventDefault();
-    const novaReserva = {
-      id: Date.now(),
-      espacoNome: selectedEspaco.nome,
-      data: reservaForm.data,
-      horario: `${reservaForm.horarioInicio} - ${reservaForm.horarioFim}`,
+
+    const payload = {
+      idRecurso: selectedEspaco.ID_Recurso || selectedEspaco.id,
+      dataReserva: reservaForm.data,
+      horarioInicio: reservaForm.horarioInicio,
+      horarioFim: reservaForm.horarioFim,
       finalidade: reservaForm.finalidade,
+      // Opcional: ID do Usuário caso sua API exija
+      idUsuario: 1 
     };
 
-    setMinhasReservas([novaReserva, ...minhasReservas]);
-    alert(`Reserva solicitada para ${selectedEspaco.nome}!`);
-    setSelectedEspaco(null);
-    setReservaForm({ data: "", horarioInicio: "08:00", horarioFim: "10:00", finalidade: "" });
+    try {
+      const response = await fetch(`${API_URL}/reservas`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao criar reserva");
+      }
+
+      alert(`Reserva confirmada para ${selectedEspaco.Nome_Recurso || selectedEspaco.nome}!`);
+      setSelectedEspaco(null);
+      setReservaForm({ data: "", horarioInicio: "08:00", horarioFim: "10:00", finalidade: "" });
+      
+      // Recarrega as reservas para exibir a nova lista atualizada do banco
+      carregarReservas();
+    } catch (error) {
+      console.error("Erro ao solicitar reserva:", error);
+      alert("Falha ao registrar reserva no banco de dados.");
+    }
   };
 
   const espacosFiltrados = espacos.filter((e) => {
+    const tipo = (e.Tipo || e.tipo || "").toLowerCase();
     if (filtroTipo === "todos") return true;
-    return e.tipo.toLowerCase() === filtroTipo.toLowerCase();
+    return tipo === filtroTipo.toLowerCase();
   });
 
   return (
@@ -96,27 +141,41 @@ export default function ReservaPage() {
             <div className={styles.espacosSection}>
               <h2>Espaços Cadastrados</h2>
               <div className={styles.cardsGrid}>
-                {espacosFiltrados.map((esp) => (
-                  <div key={esp.id} className={styles.card}>
-                    <div className={styles.cardHeader}>
-                      <span className={styles.tagTipo}>{esp.tipo}</span>
-                      <span className={styles.statusBadge} style={{ color: esp.statusCor, borderColor: esp.statusCor }}>
-                        ● {esp.status}
-                      </span>
-                    </div>
+                {espacosFiltrados.length === 0 ? (
+                  <p className={styles.emptyText}>Nenhum espaço encontrado.</p>
+                ) : (
+                  espacosFiltrados.map((esp) => {
+                    const id = esp.ID_Recurso || esp.id;
+                    const nome = esp.Nome_Recurso || esp.nome;
+                    const tipo = esp.Tipo || esp.tipo;
+                    const bloco = esp.Bloco || esp.bloco;
+                    const capacidade = esp.Capacidade || esp.capacidade;
+                    const status = esp.Status || esp.status || "Disponível";
+                    const statusCor = esp.StatusCor || esp.statusCor || "#22c55e";
 
-                    <h3>{esp.nome}</h3>
-                    <p className={styles.cardInfo}> {esp.bloco} |  Cap: {esp.capacidade} pessoas</p>
+                    return (
+                      <div key={id} className={styles.card}>
+                        <div className={styles.cardHeader}>
+                          <span className={styles.tagTipo}>{tipo}</span>
+                          <span className={styles.statusBadge} style={{ color: statusCor, borderColor: statusCor }}>
+                            ● {status}
+                          </span>
+                        </div>
 
-                    <button
-                      disabled={esp.status !== "Disponível"}
-                      onClick={() => setSelectedEspaco(esp)}
-                      className={styles.btnReservar}
-                    >
-                      {esp.status === "Disponível" ? "Reservar Espaço" : "Indisponível"}
-                    </button>
-                  </div>
-                ))}
+                        <h3>{nome}</h3>
+                        <p className={styles.cardInfo}>{bloco} | Cap: {capacidade} pessoas</p>
+
+                        <button
+                          disabled={status !== "Disponível"}
+                          onClick={() => setSelectedEspaco(esp)}
+                          className={styles.btnReservar}
+                        >
+                          {status === "Disponível" ? "Reservar Espaço" : "Indisponível"}
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
 
@@ -129,10 +188,12 @@ export default function ReservaPage() {
               ) : (
                 <ul className={styles.reservaList}>
                   {minhasReservas.map((res) => (
-                    <li key={res.id} className={styles.reservaCard}>
-                      <strong>{res.espacoNome}</strong>
-                      <p> {res.data} |  {res.horario}</p>
-                      <small>{res.finalidade}</small>
+                    <li key={res.ID_Reserva || res.id} className={styles.reservaCard}>
+                      <strong>{res.Nome_Recurso || res.espacoNome || `Recurso #${res.ID_Recurso}`}</strong>
+                      <p>
+                        {res.Data_Reserva || res.data} | {res.Horario_Inicio || res.horarioInicio} - {res.Horario_Fim || res.horarioFim || res.horario}
+                      </p>
+                      <small>{res.Finalidade || res.finalidade}</small>
                     </li>
                   ))}
                 </ul>
@@ -144,8 +205,10 @@ export default function ReservaPage() {
           {selectedEspaco && (
             <div className={styles.modalOverlay}>
               <div className={styles.modal}>
-                <h3>Solicitar Reserva: {selectedEspaco.nome}</h3>
-                <p className={styles.modalSub}>{selectedEspaco.bloco} • Capacidade: {selectedEspaco.capacidade} pessoas</p>
+                <h3>Solicitar Reserva: {selectedEspaco.Nome_Recurso || selectedEspaco.nome}</h3>
+                <p className={styles.modalSub}>
+                  {selectedEspaco.Bloco || selectedEspaco.bloco} - Capacidade: {selectedEspaco.Capacidade || selectedEspaco.capacidade} pessoas
+                </p>
 
                 <form onSubmit={handleConfirmarReserva} className={styles.modalForm}>
                   <div className={styles.field}>

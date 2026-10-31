@@ -23,4 +23,12 @@ async function registrarAcesso(idUsuario) {
   await query(`UPDATE Usuario SET Data_Ultimo_Acesso = GETDATE() WHERE ID_Usuario = @idUsuario`, { idUsuario });
 }
 
-module.exports = { criar, buscarPorEmailESenha, registrarAcesso };
+async function buscarTodos() {
+  const result = await query(`
+    SELECT ID_Usuario, Nome_Completo, Email, Login_Usuario, Celular 
+    FROM Usuario
+  `);
+  return result.recordset;
+}
+
+module.exports = { criar, buscarPorEmailESenha, registrarAcesso, buscarTodos };

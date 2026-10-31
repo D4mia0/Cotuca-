@@ -10,26 +10,31 @@ async function listar(req, res) {
   }
 }
 
-async function criar(req, res) {
+async function cadastrar(req, res) {
   try {
-    const { tipoRecurso, nome, capacidade, localizacao } = req.body;
+    // Aceita tanto nomes em minúsculas como com inicial maiúscula
+    const nome = req.body.nome || req.body.Nome;
+    const capacidade = req.body.capacidade || req.body.Capacidade;
+    const bloco = req.body.bloco || req.body.Bloco || req.body.localizacao || req.body.Localizacao;
 
-    if (!tipoRecurso || !nome || !capacidade || !localizacao) {
+    if (!nome || !capacidade || !bloco) {
       return res.status(400).json({ erro: 'Campos obrigatórios faltando' });
     }
 
-    const novo = await Recurso.criar({
-      tipoRecurso,
+    const novoRecurso = await Recurso.criar({
       nome,
-      capacidade: parseInt(capacidade),
-      localizacao
+      capacidade,
+      bloco,
+      equipamentos: req.body.equipamentos || '',
+      tipo: req.body.tipo || 'Laboratorio',
+      status: req.body.status || 'Disponível'
     });
 
-    res.status(201).json(novo);
+    res.status(201).json(novoRecurso);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao cadastrar recurso' });
+    console.error('Erro ao cadastrar recurso:', error);
+    res.status(500).json({ erro: 'Erro ao inserir recurso no banco de dados' });
   }
 }
 
-module.exports = { listar, criar };
+module.exports = { listar, cadastrar };
