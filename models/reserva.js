@@ -5,7 +5,7 @@ async function listar(idUsuario = null) {
     SELECT 
       r.ID_Reserva, r.Data_Inicial, r.Data_Final, r.Hora_Inicial, r.Hora_Final,
       r.ID_Usuario, u.Nome_Completo, r.Codigo_Recurso, rec.Nome AS Nome_Recurso,
-      rec.Tipo_Recurso, r.ID_Status, s.Descricao AS Status
+      rec.Tipo_Recurso, r.ID_Status, s.Descricao AS Status, r.Motivo
     FROM Reserva r
     INNER JOIN Usuario u ON r.ID_Usuario = u.ID_Usuario
     INNER JOIN Recurso rec ON r.Codigo_Recurso = rec.Codigo_Recurso
@@ -36,9 +36,9 @@ async function existeConflito({ codigoRecurso, dataInicial, horaInicial, horaFin
 
 async function criar(dados) {
   const result = await query(`
-    INSERT INTO Reserva (Data_Inicial, Data_Final, Hora_Inicial, Hora_Final, ID_Usuario, Codigo_Recurso, ID_Status)
+    INSERT INTO Reserva (Data_Inicial, Data_Final, Hora_Inicial, Hora_Final, ID_Usuario, Codigo_Recurso, ID_Status, Motivo)
     OUTPUT INSERTED.*
-    VALUES (@dataInicial, @dataFinal, @horaInicial, @horaFinal, @idUsuario, @codigoRecurso, @idStatus)
+    VALUES (@dataInicial, @dataFinal, @horaInicial, @horaFinal, @idUsuario, @codigoRecurso, @idStatus, @motivo)
   `, dados);
   return result.recordset[0];
 }

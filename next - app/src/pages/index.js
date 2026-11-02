@@ -21,7 +21,6 @@ export default function Home() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
 
-  // Estado contendo todos os campos exigidos pela tabela Usuario
   const [formData, setFormData] = useState({
     nomeCompleto: "",
     cpf: "",
@@ -41,7 +40,7 @@ export default function Home() {
     e.preventDefault();
 
     if (isLogin) {
-      // 1. LOGIN NA API
+      // 1. AUTENTICAÇÃO VIA API
       try {
         const response = await fetch(`${API_URL}/usuarios/login`, {
           method: "POST",
@@ -58,9 +57,10 @@ export default function Home() {
           throw new Error(usuario.erro || "Falha na autenticação.");
         }
 
+        // Armazena objeto de sessão no localStorage
         localStorage.setItem("usuario", JSON.stringify(usuario));
-        alert(`Bem-vindo(a), ${usuario.Nome_Completo}!`);
 
+        // Redirecionamento por perfil (1 = Professor -> /cadastro, 0 = Aluno -> /reserva)
         if (usuario.E_Professor === 1) {
           router.push("/cadastro");
         } else {
@@ -70,12 +70,13 @@ export default function Home() {
         alert(`Erro de Acesso: ${error.message}`);
       }
     } else {
+      // 2. REGISTRO DE NOVO USUÁRIO
       try {
         const payload = {
           cpf: formData.cpf,
           nomeCompleto: formData.nomeCompleto,
-          dataAniversario: formData.dataAniversario || null,
-          celular: formData.celular || "",
+          dataAniversario: formData.dataAniversario ? formData.dataAniversario : null,
+          celular: formData.celular ? formData.celular : "",
           email: formData.email,
           loginUsuario: formData.loginUsuario,
           senha: formData.senha,
@@ -121,10 +122,6 @@ export default function Home() {
           <div className={styles.headerLeft}>
             <span className={styles.logo}>ReservaLab</span>
           </div>
-
-          <Link href="/reserva" className={styles.headerQuickBtn}>
-            Área de Reservas
-          </Link>
         </header>
 
         <main className={styles.main}>
@@ -213,7 +210,6 @@ export default function Home() {
                 </>
               )}
 
-              {/* CAMPOS COMUNS (E-MAIL E SENHA) */}
               <div className={styles.field}>
                 <label className={styles.label}>E-mail Institucional</label>
                 <input
@@ -270,12 +266,6 @@ export default function Home() {
                 {isLogin ? "Cadastre-se aqui" : "Faça login"}
               </button>
             </p>
-          </div>
-
-          <div className={styles.guestBox}>
-            <Link href="/reserva" className={styles.directBtn}>
-              Entrar sem login (Ver Reservas) →
-            </Link>
           </div>
         </main>
 

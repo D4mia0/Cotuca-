@@ -12,7 +12,8 @@ CREATE TABLE Usuario (
     Login_Usuario VARCHAR(50) NOT NULL UNIQUE,
     Senha VARCHAR(255) NOT NULL,
     Data_Cadastro DATETIME DEFAULT GETDATE(),
-    Data_Ultimo_Acesso DATETIME
+    Data_Ultimo_Acesso DATETIME,
+    E_Professor INT NOT NULL
 );
 
 CREATE TABLE Auditoria_Acesso (
@@ -27,7 +28,12 @@ CREATE TABLE Recurso (
     Tipo_Recurso VARCHAR(20) NOT NULL,
     Nome VARCHAR(100) NOT NULL,
     Capacidade INT NOT NULL,
-    Localizacao VARCHAR(150) NOT NULL
+    Localizacao VARCHAR(150) NOT NULL,
+    Equipamentos VARCHAR(150) NOT NULL,
+    ID_Status INT NOT NULL,
+    ID_Usuario INT NOT NULL,
+    FOREIGN KEY (ID_Status) REFERENCES Status_Reserva(ID_Status),
+    FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario)
 );
 
 CREATE TABLE Status_Reserva (
@@ -50,6 +56,7 @@ CREATE TABLE Reserva (
     ID_Usuario INT NOT NULL,
     Codigo_Recurso INT NOT NULL,
     ID_Status INT NOT NULL,
+    Motivo VARCHAR(200) NOT NULL,
     FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario),
     FOREIGN KEY (Codigo_Recurso) REFERENCES Recurso(Codigo_Recurso),
     FOREIGN KEY (ID_Status) REFERENCES Status_Reserva(ID_Status)
