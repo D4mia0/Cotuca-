@@ -94,13 +94,9 @@ export default function ReservaPage() {
     }
   }
 
+
   const handleConfirmarReserva = async (e) => {
     e.preventDefault();
-
-    if (!usuarioLogado) {
-      alert("Você precisa realizar login para efetuar uma reserva.");
-      return;
-    }
 
     const payload = {
       codigoRecurso: selectedEspaco.Codigo_Recurso,
@@ -205,6 +201,10 @@ export default function ReservaPage() {
                 Olá, <strong>{usuarioLogado.Nome_Completo}</strong>
               </span>
 
+              <Link href="/verReservas" className={styles.adminBtn}>
+                Consultar Reservas
+              </Link>
+
               {usuarioLogado.E_Professor === 1 && (
                 <Link href="/cadastro" className={styles.adminBtn}>
                   Cadastrar Espaços
@@ -246,7 +246,7 @@ export default function ReservaPage() {
           </div>
 
           <div className={styles.gridContainer}>
-            {/* ESPAÇOS CADASTRADOS */}
+
             <div className={styles.espacosSection}>
               <h2>Espaços Cadastrados</h2>
               <div className={styles.cardsGrid}>
@@ -256,6 +256,10 @@ export default function ReservaPage() {
                   espacosFiltrados.map((esp) => {
                     const statusAtual = calcularStatusEspaco(esp);
                     const { cor, reservavel } = obterConfiguracaoStatus(statusAtual);
+
+                    const ehDonoOuSemDono =
+                      !esp.ID_Usuario || Number(esp.ID_Usuario) === Number(usuarioLogado?.ID_Usuario);
+                    const podeAlterarStatus = usuarioLogado?.E_Professor === 1 && ehDonoOuSemDono;
 
                     return (
                       <div key={esp.Codigo_Recurso} className={styles.card}>
@@ -288,28 +292,25 @@ export default function ReservaPage() {
                           {reservavel ? "Reservar Espaço" : statusAtual}
                         </button>
 
-                        {/* Alteração de Status EXCLUSIVA para o PROFESSOR QUE CADASTROU O RECURSO */}
-                        {usuarioLogado &&
-                          usuarioLogado.E_Professor === 1 &&
-                          esp.ID_Usuario === usuarioLogado.ID_Usuario && (
-                            <div className={styles.adminStatusControl}>
-                              <label className={styles.adminStatusLabel}>
-                                Alterar Status:
-                              </label>
-                              <select
-                                value={esp.ID_Status ? esp.ID_Status : 1}
-                                onChange={(e) =>
-                                  atualizarStatusRecurso(esp.Codigo_Recurso, e.target.value)
-                                }
-                                className={styles.adminStatusSelect}
-                              >
-                                <option value="1">Livre</option>
-                                <option value="2">Ocupado</option>
-                                <option value="3">Bloqueado</option>
-                                <option value="4">Reservado</option>
-                              </select>
-                            </div>
-                          )}
+                        {podeAlterarStatus && (
+                          <div className={styles.adminStatusControl}>
+                            <label className={styles.adminStatusLabel}>
+                              Alterar Status (Docente):
+                            </label>
+                            <select
+                              value={esp.ID_Status ? esp.ID_Status : 1}
+                              onChange={(e) =>
+                                atualizarStatusRecurso(esp.Codigo_Recurso, e.target.value)
+                              }
+                              className={styles.adminStatusSelect}
+                            >
+                              <option value="1">Livre</option>
+                              <option value="2">Ocupado</option>
+                              <option value="3">Bloqueado</option>
+                              <option value="4">Reservado</option>
+                            </select>
+                          </div>
+                        )}
                       </div>
                     );
                   })
@@ -317,7 +318,6 @@ export default function ReservaPage() {
               </div>
             </div>
 
-            {/* MINHAS RESERVAS */}
             <div className={styles.minhasReservasSection}>
               <h2>Minhas Reservas ({minhasReservas.length})</h2>
 
@@ -355,7 +355,6 @@ export default function ReservaPage() {
             </div>
           </div>
 
-          {/* MODAL DE RESERVA */}
           {selectedEspaco && (
             <div className={styles.modalOverlay}>
               <div className={styles.modal}>

@@ -20,7 +20,6 @@ export default function CadastroUsuarioPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Monta o payload estrito correspondente ao contrato do Usuario Model
     const payload = {
       cpf: form.cpf,
       nomeCompleto: form.nomeCompleto,

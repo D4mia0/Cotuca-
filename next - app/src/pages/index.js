@@ -40,7 +40,6 @@ export default function Home() {
     e.preventDefault();
 
     if (isLogin) {
-      // 1. AUTENTICAÇÃO VIA API
       try {
         const response = await fetch(`${API_URL}/usuarios/login`, {
           method: "POST",
@@ -57,10 +56,8 @@ export default function Home() {
           throw new Error(usuario.erro || "Falha na autenticação.");
         }
 
-        // Armazena objeto de sessão no localStorage
         localStorage.setItem("usuario", JSON.stringify(usuario));
 
-        // Redirecionamento por perfil (1 = Professor -> /cadastro, 0 = Aluno -> /reserva)
         if (usuario.E_Professor === 1) {
           router.push("/cadastro");
         } else {
@@ -70,7 +67,7 @@ export default function Home() {
         alert(`Erro de Acesso: ${error.message}`);
       }
     } else {
-      // 2. REGISTRO DE NOVO USUÁRIO
+  
       try {
         const payload = {
           cpf: formData.cpf,
@@ -238,15 +235,15 @@ export default function Home() {
 
               {!isLogin && (
                 <div className={styles.field}>
-                  <label className={styles.label}>Vínculo / Perfil</label>
+                  <label className={styles.label}>Perfil</label>
                   <select
                     name="eProfessor"
                     value={formData.eProfessor}
                     onChange={handleChange}
                     className={styles.select}
                   >
-                    <option value="0">Aluno / Estudante</option>
-                    <option value="1">Professor / Docente</option>
+                    <option value="0">Aluno</option>
+                    <option value="1">Professor</option>
                   </select>
                 </div>
               )}

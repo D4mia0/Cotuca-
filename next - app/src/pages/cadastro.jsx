@@ -44,7 +44,6 @@ export default function AdminPage() {
     }
   }
 
-  // 2. CADASTRO DE LABORATÓRIO (POST)
   const handleAddLab = async (e) => {
     e.preventDefault();
 
@@ -88,7 +87,6 @@ export default function AdminPage() {
     }
   };
 
-  // 3. CADASTRO DE SALA (POST)
   const handleAddSala = async (e) => {
     e.preventDefault();
 
@@ -159,7 +157,6 @@ export default function AdminPage() {
             </p>
           </div>
 
-          {/* Abas */}
           <div className={styles.tabs}>
             <button
               onClick={() => setActiveTab("lab")}
@@ -233,7 +230,6 @@ export default function AdminPage() {
                 </form>
               )}
 
-              {/* 2. FORMULÁRIO DE SALA */}
               {activeTab === "sala" && (
                 <form onSubmit={handleAddSala} className={styles.form}>
                   <h2>Nova Sala</h2>
@@ -290,7 +286,6 @@ export default function AdminPage() {
               )}
             </div>
 
-            {/* LISTAGEM DOS ITENS CADASTRADOS */}
             <div className={styles.listCard}>
               <h2>
                 {activeTab === "lab"
